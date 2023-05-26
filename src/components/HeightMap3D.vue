@@ -233,8 +233,8 @@
         const x = event.pageX;
         const y = event.pageY;
         const canvas = document.getElementById('heightmap-3d') as HTMLCanvasElement;
-        const dX = (x - this.position[0]) * 2 * PIdeg / canvas.width;
-        const dY = (y - this.position[1]) * 2 * PIdeg / canvas.height;
+        const dX = (x - this.position[0]) * PIdeg / canvas.width;
+        const dY = (y - this.position[1]) * PIdeg / canvas.height;
 
         this.angleY += dX;
 
