@@ -2,13 +2,13 @@
   <v-container fluid class="fill-height">
     <v-row no-gutters class="fill-height flex-nowrap">
       <v-col
-        cols="4"
+        cols="3"
         class="flex-grow-0 fill-height flex-shrink-0"
       >
         <height-map-list/>
       </v-col>
       <v-col
-        cols="8"
+        cols="9"
         class="flex-grow-0 fill-height flex-shrink-0"
       >
         <height-map-view/>

@@ -86,6 +86,10 @@ export const mutations = {
 
     if (state.selectedId === id) {
       state.selectedId = null;
+
+      if (state.list.length > 0) {
+        state.selectedId  = state.list[0].id;
+      }
     }
   },
   [EHeightMapActions.Select](state: IHeightMapsState, id: string): void {

@@ -23,7 +23,7 @@ export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, fi
     fieldOfViewRadians * Math.PI / 180,   // field of view
     canvas.clientWidth / canvas.clientHeight, // aspect
     1,  // near
-    width * 2,  // far
+    width * 2 + 1,  // far
   );
   const cameraPosition = [-width, height * 2, -depth];
   const target = [0, 0, 0];

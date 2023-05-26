@@ -14,7 +14,6 @@
     top: 0;
     width: 260px;
     position: absolute;
-
   }
 </style>
 
@@ -152,7 +151,8 @@
   import { init } from '@/webgl/base/init';
   import { IPoint } from '@/interfaces/IPrimitive';
   import { IHeightMap } from '@/interfaces/IHeightMap';
-  import { PIdeg } from '@/constants/WEGBL';
+  import { PIFullDeg, PIdeg, RotateInterval } from '@/constants/WEGBL';
+  import { EKeys } from '@/constants/keys';
 
   export interface IHeightMapState {
     fieldOfView: number;
@@ -162,7 +162,9 @@
     angleX: number;
     angleY: number;
     angleZ: number;
+    moving: boolean;
     autorotate: boolean;
+    position: IPoint | undefined;
     intervalId: NodeJS.Timer | undefined;
   }
 
@@ -176,8 +178,10 @@
         angleX: 0,
         angleY: 0,
         angleZ: 0,
+        moving: false,
         autorotate: false,
         intervalId: void 0,
+        position: void 0,
       }
     },
     methods: {
@@ -200,14 +204,147 @@
         scene(canvas, heightMap, this.fieldOfView, this.colors, rotation, translation);
       },
 
-      autorotateInterval() {
-        this.angleY ++;
+      onMouseDown(event: MouseEvent): void {
+        event.preventDefault();
 
-        if (this.angleY > PIdeg * 2) {
+        const x = event.pageX;
+        const y = event.pageY;
+
+        this.moving = true;
+        this.position = [x, y, 0];
+      },
+
+      onMouseUp(event: MouseEvent): void {
+        event.preventDefault();
+        this.moving = false;
+      },
+
+      onMouseMove(event: MouseEvent): void {
+        event.preventDefault();
+
+        if (!this.moving || !this.position) {
+          return;
+        }
+
+        const x = event.pageX;
+        const y = event.pageY;
+        const canvas = document.getElementById('heightmap-3d') as HTMLCanvasElement;
+        const dX = (x - this.position[0]) * 2 * PIdeg / canvas.width;
+        const dY = (y - this.position[1]) * 2 * PIdeg / canvas.height;
+
+        this.angleY += dX;
+
+        if (this.angleY < 0) {
+          this.angleY = PIFullDeg;
+        }
+
+        if (this.angleY > PIFullDeg) {
+          this.angleY = 0;
+        }
+
+        this.angleX -= dY;
+
+        if (this.angleX < 0) {
+          this.angleX = PIFullDeg;
+        }
+
+        if (this.angleX > PIFullDeg) {
+          this.angleX = 0;
+        }
+      },
+
+      increaseAngleY(): void {
+        this.angleY++;
+
+        if (this.angleY > PIFullDeg) {
           this.angleY = 0;
         }
       },
+
+      decreaseAngleY(): void {
+        this.angleY--;
+
+        if (this.angleY < 0) {
+          this.angleY = PIFullDeg;
+        }
+      },
+
+      increaseAngleX(): void {
+        this.angleX++;
+
+        if (this.angleX > PIFullDeg) {
+          this.angleX = 0;
+        }
+      },
+
+      decreaseAngleX(): void {
+        this.angleX--;
+
+        if (this.angleX < 0) {
+          this.angleX = PIFullDeg;
+        }
+      },
+
+      increaseFieldOfView(): void {
+        this.fieldOfView++;
+
+        if (this.fieldOfView > PIdeg) {
+          this.fieldOfView = PIdeg;
+        }
+      },
+
+      decreaseFieldOfView(): void {
+        this.fieldOfView--;
+
+        if (this.fieldOfView < 1) {
+          this.fieldOfView = 1;
+        }
+      },
+
+      onKeyDown(event: KeyboardEvent): void {
+        event.preventDefault();
+
+        if (this.autorotate) {
+          return;
+        }
+
+        switch (event.key) {
+          case EKeys.Left: {
+            this.decreaseAngleY();
+            return;
+          }
+
+          case EKeys.Right: {
+            this.increaseAngleY();
+            return;
+          }
+
+          case EKeys.Up: {
+            this.increaseAngleX();
+            return;
+          }
+          case EKeys.Down: {
+            this.decreaseAngleX();
+            return;
+          }
+
+          case EKeys.Minus: {
+            this.increaseFieldOfView();
+            return;
+          }
+
+          case EKeys.Plus: {
+            this.decreaseFieldOfView();
+            return;
+          }
+
+          default: {
+            return;
+          }
+        }
+      },
     },
+
     computed: {
       colors(): Record<string, RGBA> {
         const { primary, secondary } = this.$vuetify.theme.current.colors;
@@ -252,7 +389,25 @@
 
       Object.keys(this.$data).map((key: string): void => {
         this.$watch(key, this.render, { deep: true })
-      })
+      });
+
+      const canvas = document.getElementById('heightmap-3d') as HTMLCanvasElement;
+
+      canvas.addEventListener('keydown', this.onKeyDown);
+      canvas.addEventListener("mousedown", this.onMouseDown);
+      canvas.addEventListener("mouseup", this.onMouseUp);
+      canvas.addEventListener("mouseout", this.onMouseUp);
+      canvas.addEventListener("mousemove", this.onMouseMove);
+    },
+
+    beforeUnmount(): void {
+      const canvas = document.getElementById('heightmap-3d') as HTMLCanvasElement;
+
+      canvas.removeEventListener('keydown', this.onKeyDown);
+      canvas.removeEventListener("mousedown", this.onMouseDown);
+      canvas.removeEventListener("mouseup", this.onMouseUp);
+      canvas.removeEventListener("mouseout", this.onMouseUp);
+      canvas.removeEventListener("mousemove", this.onMouseMove);
     },
 
     watch: {
@@ -267,7 +422,7 @@
         handler(): void {
 
           if (this.autorotate) {
-            this.intervalId = setInterval(this.autorotateInterval, 100);
+            this.intervalId = setInterval(this.increaseAngleY, RotateInterval);
 
             return;
           }

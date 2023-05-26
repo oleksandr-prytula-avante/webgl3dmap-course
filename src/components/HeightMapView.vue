@@ -1,6 +1,6 @@
 <style scoped>
   .heightmap-canvas {
-    width: fit-content;
+    width: 100%;
     height: calc(100vh - 184px);
   }
 </style>

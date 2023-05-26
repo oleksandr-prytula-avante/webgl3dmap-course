@@ -1,4 +1,5 @@
 import { ILandscape } from "@/interfaces/ILandscape";
+import { IPoint } from "@/interfaces/IPrimitive";
 
 export type DrawPixelCallback = (pixel: ILandscape) => string;
 
