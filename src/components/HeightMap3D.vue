@@ -205,6 +205,10 @@
       },
 
       onMouseDown(event: MouseEvent): void {
+        if (this.autorotate) {
+          return;
+        }
+
         event.preventDefault();
 
         const x = event.pageX;
@@ -222,7 +226,7 @@
       onMouseMove(event: MouseEvent): void {
         event.preventDefault();
 
-        if (!this.moving || !this.position) {
+        if (!this.moving || !this.position || this.autorotate) {
           return;
         }
 
