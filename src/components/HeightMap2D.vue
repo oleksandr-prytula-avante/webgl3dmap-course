@@ -1,5 +1,6 @@
 <style scoped>
 .heightmap-2d {
+  min-width: 50%;
   max-width: 100%;
   max-height: 100%;
 }
