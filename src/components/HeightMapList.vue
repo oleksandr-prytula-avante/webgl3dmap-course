@@ -46,11 +46,6 @@
       />
     </template>
   </v-list>
-  <v-progress-circular
-    v-show="isLoading"
-    indeterminate
-    color="primary"
-  />
   <v-dialog
       v-model="isShow"
       persistent
