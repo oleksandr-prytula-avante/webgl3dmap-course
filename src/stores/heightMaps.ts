@@ -1,5 +1,15 @@
-import { ActionContext, ActionTree, Commit, CommitOptions, DispatchOptions, GetterTree, MutationTree } from 'vuex';
+import {
+  ActionContext,
+  ActionTree,
+  Commit,
+  CommitOptions,
+  DispatchOptions,
+  GetterTree,
+  MutationTree,
+} from 'vuex';
 import { v4 } from 'uuid';
+import axios from 'axios';
+
 import { IHeightMap } from '@/interfaces/IHeightMap';
 
 // STATE
@@ -38,6 +48,10 @@ export enum EHeightMapActions {
   Remove = 'Remove',
   Select = 'Select',
 }
+export enum EHeightMapRoutes {
+  HeightMap = '/heightmap',
+}
+
 
 export interface IHeightMapActions {
   [EHeightMapActions.Add](context: THeightMapActionContext, payload: THeightMapPayload): void;
@@ -69,7 +83,9 @@ export interface IHeightMapMutations {
 export type THeightMapMutations = MutationTree<IHeightMapsState> & IHeightMapMutations;
 
 export const mutations = {
-  [EHeightMapActions.Add](state: IHeightMapsState, payload: THeightMapPayload): void {
+  async [EHeightMapActions.Add](state: IHeightMapsState, payload: THeightMapPayload): Promise<void> {
+    await axios.post(EHeightMapRoutes.HeightMap, payload);
+
     const id = v4();
     const heightMap = {
       ...payload,

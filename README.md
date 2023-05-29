@@ -1,5 +1,8 @@
 # base
 
+    "build": "rm ./dist/* || true && NODE_ENV=production vue-tsc --noEmit && vite build",
+    "start": "node server.js",
+
 ## Project setup
 
 ```
