@@ -246,7 +246,7 @@
           this.angleY = 0;
         }
 
-        this.angleX -= dY;
+        this.angleX += dY;
 
         if (this.angleX < 0) {
           this.angleX = PIFullDeg;
