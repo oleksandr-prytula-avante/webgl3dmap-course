@@ -115,7 +115,12 @@ export const mutations = {
     }
 
     state.isLoading = false;
-    state.selectedId = null;
+
+    if (state.list.length > 0) {
+      const heightMap = state.list[state.list.length - 1];
+
+      state.selectedId = heightMap.id;
+    }
   },
   async [EHeightMapActions.Add](state: IHeightMapsState, payload: THeightMapPayload): Promise<void> {
     const data = {

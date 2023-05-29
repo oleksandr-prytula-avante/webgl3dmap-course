@@ -46,7 +46,12 @@
       />
     </template>
   </v-list>
-   <v-dialog
+  <v-progress-circular
+    v-show="isLoading"
+    indeterminate
+    color="primary"
+  />
+  <v-dialog
       v-model="isShow"
       persistent
       width="auto"
@@ -120,7 +125,10 @@
       },
       selectedId(): string | null {
         return this.$store.state.heightMaps.selectedId;
-      }
+      },
+      isLoading(): boolean {
+        return this.$store.state.heightMaps.isLoading;
+      },
     },
     components: {
       HeightMapImage,
