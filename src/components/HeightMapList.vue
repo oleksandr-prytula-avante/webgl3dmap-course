@@ -91,6 +91,9 @@
         isShow: false,
       }
     },
+    mounted(): void {
+      this.$store.dispatch(EHeightMapActions.Init);
+    },
     methods: {
       onSelect(selectedId: string): void {
         this.$store.dispatch(EHeightMapActions.Select, selectedId);

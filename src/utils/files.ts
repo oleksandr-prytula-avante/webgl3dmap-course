@@ -69,3 +69,11 @@ export async function getLandscapeMatrixFromBlob(file: File): Promise<ILandscape
 
   return matrix;
 }
+
+export async function getLandscapeMatrixFromDataUrl(dataURL: string | ArrayBuffer | null): Promise<ILandscape[][]> {
+  const image = await DataURLtoHTMLImageElement(dataURL);
+
+  const matrix = await getLandscapeMatrixFromImage(image);
+
+  return matrix;
+}
