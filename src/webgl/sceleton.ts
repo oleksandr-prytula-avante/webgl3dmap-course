@@ -1,31 +1,39 @@
 import * as twgl from 'twgl.js';
 
-import { TotalRGB } from '@/constants/color';
+import { TotalDegrees, TotalPercentage, TotalRGB } from '@/constants/color';
 import { IHeightMap } from "@/interfaces/IHeightMap";
 import { RGBA } from "@/interfaces/ILandscape";
+import { IPoint } from '@/interfaces/IPrimitive';
+import { PIdeg } from '@/constants/WEGBL';
 
 import { draw } from './base/draw';
 import { init } from './base/init';
 import { sphere as calculateSphere } from './base/primitives/sphere';
-import { IPoint } from '@/interfaces/IPrimitive';
-import { PIdeg } from '@/constants/WEGBL';
 
 const { m4 } = twgl;
 
-export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, fieldOfViewRadians: number, colors: Record<string, RGBA>, rotation: IPoint = [0, 0, 0], translation: IPoint = [0, 0, 1]): Promise<void> {
+export interface ISceneOptions  {
+  fieldOfView: number;
+  rotation: IPoint;
+  translation: IPoint;
+  percentage: number;
+}
+
+export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sceneOptions: ISceneOptions, colors: Record<string, RGBA>):  Promise<void> {
   const gl = canvas.getContext('webgl') as WebGLRenderingContext;
+  const { percentage, fieldOfView, rotation = [0, 0, 0], translation = [0, 0, 1] } = sceneOptions;
   const { primary, secondary } = colors;
   const { matrix } = heightMap;
   const width = matrix.length - 1;
   const depth = matrix[0].length - 1;
-  const height = width / 6;
+  const height = width / 3;
   const projection = m4.perspective(
-    fieldOfViewRadians * Math.PI / 180,   // field of view
+    fieldOfView * Math.PI / PIdeg,   // field of view
     canvas.clientWidth / canvas.clientHeight, // aspect
     1,  // near
-    width * 2 + 1,  // far
+    (width + 1) * 2,  // far
   );
-  const cameraPosition = [-width, height * 2, -depth];
+  const cameraPosition = [-width, height, -depth];
   const target = [0, 0, 0];
   const up = [0, 1, 0];
   const camera = m4.lookAt(cameraPosition, target, up);
@@ -46,7 +54,7 @@ export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, fi
     for (let x = 0; x <= width; ++x) {
       const point = matrix[x][z];
       const { greyscale } = point;
-      const y = Number(greyscale) * height / TotalRGB;
+      const y = Number(greyscale) * height * (2 * percentage / TotalDegrees) / TotalRGB;
 
       points.push(x - width / 2, y, z - depth / 2);
     }

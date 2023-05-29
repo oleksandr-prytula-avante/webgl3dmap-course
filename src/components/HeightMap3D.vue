@@ -29,7 +29,7 @@
             label="Autorotate"
             color="primary"
           />
-          <div class="d-flex my-8">
+          <div class="d-flex my-8 mr-4">
             <span class="my-1 text">FoV</span>
             <v-slider
               v-model="fieldOfView"
@@ -45,7 +45,23 @@
               </template>
             </v-slider>
           </div>
-          <div class="d-flex my-8">
+          <div class="d-flex my-8 mr-4">
+            <span class="my-1 text">H</span>
+            <v-slider
+              v-model="percentage"
+              :min="0"
+              :max="100"
+              hide-details
+              :disabled="autorotate"
+              show-ticks="always"
+              thumb-label="always"
+            >
+              <template v-slot:thumb-label>
+                {{ percentage.toFixed(2) }}
+              </template>
+            </v-slider>
+          </div>
+          <div class="d-flex my-8 mr-4">
             <span class="my-1 text">X</span>
             <v-slider
               v-model="x"
@@ -61,7 +77,7 @@
               </template>
             </v-slider>
           </div>
-          <div class="d-flex my-8">
+          <div class="d-flex my-8 mr-4">
             <span class="my-1 text">Y</span>
             <v-slider
               v-model="y"
@@ -77,7 +93,7 @@
               </template>
             </v-slider>
           </div>
-          <div class="d-flex my-8">
+          <div class="d-flex my-8 mr-4">
             <span class="my-1 text">Z</span>
             <v-slider
               v-model="z"
@@ -93,7 +109,7 @@
               </template>
             </v-slider>
           </div>
-          <div class="d-flex my-8">
+          <div class="d-flex my-8 mr-4">
             <span class="my-1 text">aX</span>
             <v-slider
               v-model="angleX"
@@ -109,7 +125,7 @@
               </template>
             </v-slider>
           </div>
-          <div class="d-flex my-8">
+          <div class="d-flex my-8 mr-4">
             <span class="my-1 text">aY</span>
             <v-slider
               v-model="angleY"
@@ -125,7 +141,7 @@
               </template>
             </v-slider>
           </div>
-          <div class="d-flex my-8">
+          <div class="d-flex my-8 mr-4">
             <span class="my-1 text">aZ</span>
             <v-slider
               v-model="angleZ"
@@ -160,7 +176,7 @@
   import { init } from '@/webgl/base/init';
   import { IPoint } from '@/interfaces/IPrimitive';
   import { IHeightMap } from '@/interfaces/IHeightMap';
-  import { PIFullDeg, PIdeg, RotateInterval } from '@/constants/WEGBL';
+  import { PI2Deg, PIdeg, RotateInterval } from '@/constants/WEGBL';
   import { EKeys } from '@/constants/keys';
 
   export interface IHeightMapState {
@@ -168,6 +184,7 @@
     x: number;
     y: number;
     z: number;
+    percentage: number;
     angleX: number;
     angleY: number;
     angleZ: number;
@@ -184,6 +201,7 @@
         x: 0,
         y: 0,
         z: 0,
+        percentage: 50,
         angleX: 0,
         angleY: 0,
         angleZ: 0,
@@ -195,8 +213,6 @@
     },
     methods: {
       render(): void {
-        const rotation = [this.angleX, this.angleY, this.angleZ] as IPoint;
-        const translation = [this.x, this.y, this.z] as IPoint;
         const heightMap = this.$store.getters.selectedHeightMap;
         const canvas = document.getElementById('heightmap-3d') as HTMLCanvasElement;
 
@@ -210,7 +226,14 @@
           return;
         }
 
-        scene(canvas, heightMap, this.fieldOfView, this.colors, rotation, translation);
+        const options = {
+          rotation: [this.angleX, this.angleY, this.angleZ] as IPoint,
+          translation: [this.x, this.y, this.z] as IPoint,
+          percentage: this.percentage,
+          fieldOfView: this.fieldOfView,
+        }
+
+        scene(canvas, heightMap, options, this.colors);
       },
 
       onMouseDown(event: MouseEvent): void {
@@ -248,20 +271,20 @@
         this.angleY += dX;
 
         if (this.angleY < 0) {
-          this.angleY = PIFullDeg;
+          this.angleY = PI2Deg;
         }
 
-        if (this.angleY > PIFullDeg) {
+        if (this.angleY > PI2Deg) {
           this.angleY = 0;
         }
 
         this.angleX += dY;
 
         if (this.angleX < 0) {
-          this.angleX = PIFullDeg;
+          this.angleX = PI2Deg;
         }
 
-        if (this.angleX > PIFullDeg) {
+        if (this.angleX > PI2Deg) {
           this.angleX = 0;
         }
       },
@@ -269,7 +292,7 @@
       increaseAngleY(): void {
         this.angleY++;
 
-        if (this.angleY > PIFullDeg) {
+        if (this.angleY > PI2Deg) {
           this.angleY = 0;
         }
       },
@@ -278,14 +301,14 @@
         this.angleY--;
 
         if (this.angleY < 0) {
-          this.angleY = PIFullDeg;
+          this.angleY = PI2Deg;
         }
       },
 
       increaseAngleX(): void {
         this.angleX++;
 
-        if (this.angleX > PIFullDeg) {
+        if (this.angleX > PI2Deg) {
           this.angleX = 0;
         }
       },
@@ -294,7 +317,7 @@
         this.angleX--;
 
         if (this.angleX < 0) {
-          this.angleX = PIFullDeg;
+          this.angleX = PI2Deg;
         }
       },
 
@@ -427,6 +450,19 @@
       selectedId: {
         immediate: true,
         handler(): void {
+          this.fieldOfView = 60;
+          this.x = 0;
+          this.y = 0;
+          this.z = 0;
+          this.percentage = 50,
+          this.angleX = 0,
+          this.angleY = 0,
+          this.angleZ = 0,
+          this.moving = false;
+          this.autorotate = false;
+          this.intervalId = void 0;
+          this.position =  void 0;
+
           this.render();
         },
       },
