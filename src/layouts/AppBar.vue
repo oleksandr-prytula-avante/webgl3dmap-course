@@ -2,7 +2,7 @@
   <v-app-bar :elevation="0">
     <v-app-bar-title>
       <v-icon color="primary" icon="mdi-earth" class='ml-4' size="large"/>
-      Height Map Terrian Generator
+      Height Map Terrian Viewer
     </v-app-bar-title>
     <template v-slot:append>
       <generate-height-map-popup/>
