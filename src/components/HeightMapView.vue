@@ -11,8 +11,8 @@
     <v-tab value="3d" class="pt-1">3D</v-tab>
   </v-tabs>
   <div>
-    <div class="heightmap-canvas px-4 py-4 pl-11">
-      <height-map2-d v-if="tab === '2d'"/>
+    <div class="heightmap-canvas">
+      <height-map2-d v-if="tab === '2d'" class="pt-4"/>
       <height-map3-d v-else/>
     </div>
   </div>

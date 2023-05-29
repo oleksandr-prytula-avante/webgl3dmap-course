@@ -3,145 +3,154 @@
     width: 100%;
     height: 100%;
   }
-  .container {
-    position: relative;
-  }
+
   .text {
     width: 40px;
   }
+
   .tooltip {
-    left: -40px;
-    top: 0;
-    width: 260px;
-    position: absolute;
+    height: 100%;
   }
 </style>
 
+
 <template>
-  <div class="heightmap-3d container">
-    <canvas id="heightmap-3d" class="heightmap-3d"></canvas>
-    <v-card v-show="selectedId" :elevation="0" class="tooltip py-4 px-4">
-      <v-switch
-        class="right-button mr-4"
-        v-model="autorotate"
-        hide-details
-        label="Autorotate"
-        color="primary"
-      />
-      <div class="d-flex my-8">
-        <span class="my-1 text">FoV</span>
-        <v-slider
-          v-model="fieldOfView"
-          min="1"
-          max="180"
-          :disabled="autorotate"
-          hide-details
-          show-ticks="always"
-          thumb-label="always"
-        >
-          <template v-slot:thumb-label>
-            {{ fieldOfView.toFixed(2)  }}
-          </template>
-        </v-slider>
-      </div>
-      <div class="d-flex my-8">
-        <span class="my-1 text">X</span>
-        <v-slider
-          v-model="x"
-          :min="-width"
-          :max="width"
-          hide-details
-          :disabled="autorotate"
-          show-ticks="always"
-          thumb-label="always"
-        >
-          <template v-slot:thumb-label>
-            {{ x.toFixed(2)  }}
-          </template>
-        </v-slider>
-      </div>
-      <div class="d-flex my-8">
-        <span class="my-1 text">Y</span>
-        <v-slider
-          v-model="y"
-          :min="-width / 3"
-          :max="width / 3"
-          hide-details
-          :disabled="autorotate"
-          show-ticks="always"
-          thumb-label="always"
-        >
-          <template v-slot:thumb-label>
-            {{ y.toFixed(2)  }}
-          </template>
-        </v-slider>
-      </div>
-      <div class="d-flex my-8">
-        <span class="my-1 text">Z</span>
-        <v-slider
-          v-model="z"
-          :min="-deep"
-          :max="deep"
-          :disabled="autorotate"
-          hide-details
-          show-ticks="always"
-          thumb-label="always"
-        >
-          <template v-slot:thumb-label>
-            {{ z.toFixed(2)  }}
-          </template>
-        </v-slider>
-      </div>
-      <div class="d-flex my-8">
-        <span class="my-1 text">aX</span>
-        <v-slider
-          v-model="angleX"
-          min="1"
-          max="360"
-          :disabled="autorotate"
-          hide-details
-          show-ticks="always"
-          thumb-label="always"
-        >
-          <template v-slot:thumb-label>
-            {{ angleX.toFixed(2)  }}
-          </template>
-        </v-slider>
-      </div>
-      <div class="d-flex my-8">
-        <span class="my-1 text">aY</span>
-        <v-slider
-          v-model="angleY"
-          min="1"
-          max="360"
-          :disabled="autorotate"
-          hide-details
-          show-ticks="always"
-          thumb-label="always"
-        >
-          <template v-slot:thumb-label>
-            {{ angleY.toFixed(2)  }}
-          </template>
-        </v-slider>
-      </div>
-      <div class="d-flex my-8">
-        <span class="my-1 text">aZ</span>
-        <v-slider
-          v-model="angleZ"
-          min="1"
-          max="360"
-          :disabled="autorotate"
-          hide-details
-          show-ticks="always"
-          thumb-label="always"
-        >
-          <template v-slot:thumb-label>
-            {{ angleZ.toFixed(2)  }}
-          </template>
-        </v-slider>
-      </div>
-    </v-card>
-  </div>
+  <v-container fluid class="heightmap-3d fill-height">
+    <v-row no-gutters class="fill-height flex-nowrap">
+      <v-col
+        cols="3"
+        class="flex-grow-0 fill-height flex-shrink-0"
+      >
+        <v-card v-show="selectedId" :elevation="0">
+          <v-switch
+            class="right-button ml-10"
+            v-model="autorotate"
+            hide-details
+            label="Autorotate"
+            color="primary"
+          />
+          <div class="d-flex my-8">
+            <span class="my-1 text">FoV</span>
+            <v-slider
+              v-model="fieldOfView"
+              min="1"
+              max="180"
+              :disabled="autorotate"
+              hide-details
+              show-ticks="always"
+              thumb-label="always"
+            >
+              <template v-slot:thumb-label>
+                {{ fieldOfView.toFixed(2) }}
+              </template>
+            </v-slider>
+          </div>
+          <div class="d-flex my-8">
+            <span class="my-1 text">X</span>
+            <v-slider
+              v-model="x"
+              :min="-width"
+              :max="width"
+              hide-details
+              :disabled="autorotate"
+              show-ticks="always"
+              thumb-label="always"
+            >
+              <template v-slot:thumb-label>
+                {{ x.toFixed(2) }}
+              </template>
+            </v-slider>
+          </div>
+          <div class="d-flex my-8">
+            <span class="my-1 text">Y</span>
+            <v-slider
+              v-model="y"
+              :min="-width / 3"
+              :max="width / 3"
+              hide-details
+              :disabled="autorotate"
+              show-ticks="always"
+              thumb-label="always"
+            >
+              <template v-slot:thumb-label>
+                {{ y.toFixed(2) }}
+              </template>
+            </v-slider>
+          </div>
+          <div class="d-flex my-8">
+            <span class="my-1 text">Z</span>
+            <v-slider
+              v-model="z"
+              :min="-deep"
+              :max="deep"
+              :disabled="autorotate"
+              hide-details
+              show-ticks="always"
+              thumb-label="always"
+            >
+              <template v-slot:thumb-label>
+                {{ z.toFixed(2) }}
+              </template>
+            </v-slider>
+          </div>
+          <div class="d-flex my-8">
+            <span class="my-1 text">aX</span>
+            <v-slider
+              v-model="angleX"
+              min="1"
+              max="360"
+              :disabled="autorotate"
+              hide-details
+              show-ticks="always"
+              thumb-label="always"
+            >
+              <template v-slot:thumb-label>
+                {{ angleX.toFixed(2) }}
+              </template>
+            </v-slider>
+          </div>
+          <div class="d-flex my-8">
+            <span class="my-1 text">aY</span>
+            <v-slider
+              v-model="angleY"
+              min="1"
+              max="360"
+              :disabled="autorotate"
+              hide-details
+              show-ticks="always"
+              thumb-label="always"
+            >
+              <template v-slot:thumb-label>
+                {{ angleY.toFixed(2) }}
+              </template>
+            </v-slider>
+          </div>
+          <div class="d-flex my-8">
+            <span class="my-1 text">aZ</span>
+            <v-slider
+              v-model="angleZ"
+              min="1"
+              max="360"
+              :disabled="autorotate"
+              hide-details
+              show-ticks="always"
+              thumb-label="always"
+            >
+              <template v-slot:thumb-label>
+                {{ angleZ.toFixed(2) }}
+              </template>
+            </v-slider>
+          </div>
+        </v-card>
+      </v-col>
+      <v-col
+        cols="9"
+        class="flex-grow-0 fill-height flex-shrink-0"
+      >
+        <canvas id="heightmap-3d" class="heightmap-3d"></canvas>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
