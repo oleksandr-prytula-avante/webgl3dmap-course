@@ -15,16 +15,15 @@ app.use(cors());
 app.use(express.static(dirname));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(function (error, req, res) {
+  res.status(500).send(error);
+});
 
 useHeightMaps(app);
 
 app.get('*', function (_, res) {
   res.sendFile(path.resolve(dirname, 'index.html'));
 });
-
-app.use(function (error, req, res) {
-  res.status(500).send(error);
-})
 
 app.listen(PORT, function () {
   console.log(`App server is running ${PORT}`);
