@@ -8,7 +8,7 @@ const HeightMapByIdRoute = `${HeightMapRoute}/:id`;
 
 function useHeightMaps(app) {
   app.get(HeightMapRoute, async function(_, res) {
-    const heightmaps = await heightMapsRef.orderByChild('createdAt').get();
+    const heightmaps = await heightMapsRef.get();
 
     res.status(200).send(heightmaps);
   })
@@ -19,7 +19,7 @@ function useHeightMaps(app) {
     const heightMap = {
       colorImage,
       greyscaleImage,
-      createdAt: new Date(),
+      createdAt: (new Date()).toISOString(),
     };
 
     heightMapsRef.child(id).set(heightMap);

@@ -16,7 +16,8 @@ app.use(express.static(dirname));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(function (error, req, res, next) {
-  res.status(500).send(error);
+  res.status(500);
+  res.render('error', { error });
 });
 
 useHeightMaps(app);

@@ -94,36 +94,32 @@ export type THeightMapMutations = MutationTree<IHeightMapsState> & IHeightMapMut
 
 export const mutations = {
   async [EHeightMapActions.Init](state: IHeightMapsState): Promise<void> {
-    try {
-      const response = await axios.get(EHeightMapRoutes.HeightMap);
-      const data = response.data as Record<string, THeightMapApiPayload> || {};
-      const entries = Object.entries(data);
+    const response = await axios.get(EHeightMapRoutes.HeightMap);
+    const data = response.data as Record<string, THeightMapApiPayload> || {};
+    const entries = Object.entries(data);
 
-      state.isLoading = true;
+    state.isLoading = true;
 
-      for (const entry of entries) {
-        const [id, { colorImage, greyscaleImage }] = entry;
-        const matrix = await getLandscapeMatrixFromDataUrl(colorImage);
+    for (const entry of entries) {
+      const [id, { colorImage, greyscaleImage }] = entry;
+      const matrix = await getLandscapeMatrixFromDataUrl(colorImage);
 
-        const heightMap: IHeightMap = {
-          id,
-          matrix,
-          colorImage,
-          greyscaleImage,
-        };
+      const heightMap: IHeightMap = {
+        id,
+        matrix,
+        colorImage,
+        greyscaleImage,
+      };
 
-        state.list.push(heightMap);
-      }
+      state.list.push(heightMap);
+    }
 
-      state.isLoading = false;
+    state.isLoading = false;
 
-      if (state.list.length > 0) {
-        const heightMap = state.list[state.list.length - 1];
+    if (state.list.length > 0) {
+      const heightMap = state.list[state.list.length - 1];
 
-        state.selectedId = heightMap.id;
-      }
-    } catch (error) {
-      console.error(error);
+      state.selectedId = heightMap.id;
     }
   },
   async [EHeightMapActions.Add](state: IHeightMapsState, payload: THeightMapPayload): Promise<void> {
@@ -134,11 +130,7 @@ export const mutations = {
 
     state.isLoading = true;
 
-    try {
-      await axios.post(EHeightMapRoutes.HeightMap, data);
-    } catch(error) {
-      console.error(error);
-    }
+    await axios.post(EHeightMapRoutes.HeightMap, data);
 
     state.isLoading = false;
 
@@ -157,11 +149,7 @@ export const mutations = {
     });
     state.isLoading = true;
 
-    try {
-      await axios.delete(`${EHeightMapRoutes.HeightMap}/${id}`);
-    } catch(error) {
-      console.error(error);
-    }
+    await axios.delete(`${EHeightMapRoutes.HeightMap}/${id}`);
 
     state.isLoading = false;
 
