@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.static(dirname));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(function (error, req, res) {
+app.use(function (error, req, res, next) {
   res.status(500).send(error);
 });
 
