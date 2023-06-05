@@ -22,6 +22,10 @@ app.get('*', function (_, res) {
   res.sendFile(path.resolve(dirname, 'index.html'));
 });
 
+app.use(function (error, req, res) {
+  res.status(500).send(error);
+})
+
 app.listen(PORT, function () {
   console.log(`App server is running ${PORT}`);
   console.log('Press Ctrl+C to quit.');
