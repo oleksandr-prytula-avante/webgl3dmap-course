@@ -172,8 +172,8 @@
 <script lang="ts">
   import { RGBA } from '@/interfaces/ILandscape';
   import { HEXtoRGBAfrom0to1 } from '@/utils/colors';
-  import { scene } from '@/webgl/sceleton';
-  import { init } from '@/webgl/base/init';
+  import { scene } from '@/webgl/scene';
+  import { init } from '@/webgl/init';
   import { IPoint } from '@/interfaces/IPrimitive';
   import { IHeightMap } from '@/interfaces/IHeightMap';
   import { PI2Deg, PIdeg, RotateInterval } from '@/constants/WEGBL';

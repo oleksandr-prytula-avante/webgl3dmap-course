@@ -6,9 +6,9 @@ import { RGBA } from "@/interfaces/ILandscape";
 import { IPoint } from '@/interfaces/IPrimitive';
 import { PIdeg } from '@/constants/WEGBL';
 
-import { draw } from './base/draw';
-import { init } from './base/init';
-import { sphere as calculateSphere } from './base/primitives/sphere';
+import { draw } from './draw';
+import { init } from './init';
+import { sphere as calculateSphere } from './primitives/sphere';
 
 const { m4 } = twgl;
 
