@@ -4,8 +4,8 @@ import * as twgl from 'twgl.js';
 import { RGBA } from '@/interfaces/ILandscape';
 import { PointLength } from '@/constants/WEGBL';
 
-import { vertexShader } from './shaders/vertex';
-import { fragmentShader } from './shaders/fragment';
+import { vertexShader } from './vertex';
+import { fragmentShader } from './fragment';
 
 export function draw(canvas: HTMLCanvasElement, primitiveType: number, points: number[], indexes: number[], mat: twgl.m4.Mat4, color: RGBA): void {
   const gl = canvas.getContext('webgl') as WebGLRenderingContext;

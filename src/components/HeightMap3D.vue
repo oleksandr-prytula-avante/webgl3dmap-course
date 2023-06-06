@@ -3,11 +3,9 @@
     width: 100%;
     height: 100%;
   }
-
   .text {
     width: 40px;
   }
-
   .tooltip {
     height: 100%;
   }
@@ -22,8 +20,16 @@
         class="flex-grow-0 fill-height flex-shrink-0"
       >
         <v-card v-show="selectedId" :elevation="0">
+          <v-btn-toggle
+            active
+            v-model="type"
+          >
+            <v-btn value="lines">Lines</v-btn>
+            <v-btn value="greyscale">Greyscale</v-btn>
+            <v-btn value="color" :disaled="true">Color</v-btn>
+          </v-btn-toggle>
           <v-switch
-            class="right-button ml-10"
+            class="right-button ml-6"
             v-model="autorotate"
             hide-details
             label="Autorotate"
@@ -172,12 +178,19 @@
 <script lang="ts">
   import { RGBA } from '@/interfaces/ILandscape';
   import { HEXtoRGBAfrom0to1 } from '@/utils/colors';
-  import { scene } from '@/webgl/scene';
+  import { scene as sceletonScene } from '@/webgl/sceleton/scene';
+  import { scene as colorScene } from '@/webgl/color/scene';
   import { init } from '@/webgl/init';
   import { IPoint } from '@/interfaces/IPrimitive';
   import { IHeightMap } from '@/interfaces/IHeightMap';
   import { PI2Deg, PIdeg, RotateInterval } from '@/constants/WEGBL';
   import { EKeys } from '@/constants/keys';
+
+  export enum ERenderType {
+    LINES = 'lines',
+    GREYSCALE = 'greyscale',
+    COLOR = 'color',
+  }
 
   export interface IHeightMapState {
     fieldOfView: number;
@@ -190,8 +203,10 @@
     angleZ: number;
     moving: boolean;
     autorotate: boolean;
+    type: ERenderType;
     position: IPoint | undefined;
     intervalId: NodeJS.Timer | undefined;
+    animationFrameId: number | undefined;
   }
 
   export default {
@@ -201,6 +216,7 @@
         x: 0,
         y: 0,
         z: 0,
+        type: ERenderType.LINES,
         percentage: 50,
         angleX: 0,
         angleY: 0,
@@ -208,32 +224,62 @@
         moving: false,
         autorotate: false,
         intervalId: void 0,
+        animationFrameId: void 0,
         position: void 0,
       }
     },
     methods: {
+      reset(): void {
+        this.fieldOfView = 60;
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.percentage = 50;
+        this.angleX = 0;
+        this.angleY = 0;
+        this.angleZ = 0;
+        this.moving = false;
+        this.autorotate = false;
+        if (this.intervalId) {
+          clearInterval(this.intervalId);
+        }
+        this.intervalId = void 0;
+        this.position = void 0;
+      },
       render(): void {
         const heightMap = this.$store.getters.selectedHeightMap;
         const canvas = document.getElementById('heightmap-3d') as HTMLCanvasElement;
 
-        if(!canvas) {
-          return;
-        }
-
-        if(!heightMap) {
+        if(canvas && heightMap) {
           init(canvas);
 
-          return;
+          const options = {
+            rotation: [this.angleX, this.angleY, this.angleZ] as IPoint,
+            translation: [this.x, this.y, this.z] as IPoint,
+            percentage: this.percentage,
+            fieldOfView: this.fieldOfView,
+          };
+
+          switch (this.type) {
+            case ERenderType.LINES: {
+              sceletonScene(canvas, heightMap, options, this.colors);
+              break;
+            }
+            case ERenderType.COLOR: {
+              break;
+            }
+            case ERenderType.GREYSCALE: {
+              colorScene(canvas, heightMap, options, this.colors);
+              break;
+            }
+          }
         }
 
-        const options = {
-          rotation: [this.angleX, this.angleY, this.angleZ] as IPoint,
-          translation: [this.x, this.y, this.z] as IPoint,
-          percentage: this.percentage,
-          fieldOfView: this.fieldOfView,
+        if (this.animationFrameId) {
+          cancelAnimationFrame(this.animationFrameId);
         }
 
-        scene(canvas, heightMap, options, this.colors);
+        this.animationFrameId = requestAnimationFrame(this.render);
       },
 
       onMouseDown(event: MouseEvent): void {
@@ -268,6 +314,7 @@
         const dX = (x - this.position[0]) * PIdeg / canvas.width;
         const dY = (y - this.position[1]) * PIdeg / canvas.height;
 
+        /*
         this.angleY += dX;
 
         if (this.angleY < 0) {
@@ -287,6 +334,7 @@
         if (this.angleX > PI2Deg) {
           this.angleX = 0;
         }
+        */
       },
 
       increaseAngleY(): void {
@@ -421,12 +469,6 @@
     },
 
     mounted(): void {
-      this.render();
-
-      Object.keys(this.$data).map((key: string): void => {
-        this.$watch(key, this.render, { deep: true })
-      });
-
       const canvas = document.getElementById('heightmap-3d') as HTMLCanvasElement;
 
       canvas.addEventListener('keydown', this.onKeyDown);
@@ -434,6 +476,8 @@
       canvas.addEventListener("mouseup", this.onMouseUp);
       canvas.addEventListener("mouseout", this.onMouseUp);
       canvas.addEventListener("mousemove", this.onMouseMove);
+
+      this.render();
     },
 
     beforeUnmount(): void {
@@ -444,26 +488,24 @@
       canvas.removeEventListener("mouseup", this.onMouseUp);
       canvas.removeEventListener("mouseout", this.onMouseUp);
       canvas.removeEventListener("mousemove", this.onMouseMove);
+
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+      }
     },
 
     watch: {
       selectedId: {
         immediate: true,
         handler(): void {
-          this.fieldOfView = 60;
-          this.x = 0;
-          this.y = 0;
-          this.z = 0;
-          this.percentage = 50,
-          this.angleX = 0,
-          this.angleY = 0,
-          this.angleZ = 0,
-          this.moving = false;
-          this.autorotate = false;
-          this.intervalId = void 0;
-          this.position =  void 0;
-
-          this.render();
+          this.reset();
+          this.type = ERenderType.LINES;
+        },
+      },
+      type: {
+        immediate: true,
+        handler(): void {
+          this.reset();
         },
       },
       autorotate: {

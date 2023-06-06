@@ -1,14 +1,12 @@
 import * as twgl from 'twgl.js';
 
-import { TotalDegrees, TotalPercentage, TotalRGB } from '@/constants/color';
+import { TotalDegrees, TotalRGB } from '@/constants/color';
 import { IHeightMap } from "@/interfaces/IHeightMap";
 import { RGBA } from "@/interfaces/ILandscape";
 import { IPoint } from '@/interfaces/IPrimitive';
 import { PIdeg } from '@/constants/WEGBL';
 
 import { draw } from './draw';
-import { init } from './init';
-import { sphere as calculateSphere } from './primitives/sphere';
 
 const { m4 } = twgl;
 
@@ -19,10 +17,10 @@ export interface ISceneOptions  {
   percentage: number;
 }
 
-export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sceneOptions: ISceneOptions, colors: Record<string, RGBA>):  Promise<void> {
+export function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sceneOptions: ISceneOptions, colors: Record<string, RGBA>): void {
   const gl = canvas.getContext('webgl') as WebGLRenderingContext;
   const { percentage, fieldOfView, rotation = [0, 0, 0], translation = [0, 0, 1] } = sceneOptions;
-  const { primary, secondary } = colors;
+  const { primary } = colors;
   const { matrix } = heightMap;
   const width = matrix.length - 1;
   const depth = matrix[0].length - 1;
@@ -31,7 +29,7 @@ export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sc
     fieldOfView * Math.PI / PIdeg,   // field of view
     canvas.clientWidth / canvas.clientHeight, // aspect
     1,  // near
-    (width + 1) * 2,  // far
+    (width + 1) * 3,  // far
   );
   const cameraPosition = [-width, height, -depth];
   const target = [0, 0, 0];
@@ -78,9 +76,5 @@ export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sc
     }
   }
 
-  const sphere = calculateSphere(Math.min(width / 10, 1), PIdeg, PIdeg, [0, 0, 0]);
-
-  init(canvas);
-  draw(canvas, gl.TRIANGLES, sphere.points, sphere.indexes, mat, secondary);
   draw(canvas, gl.LINES, points, indexes, mat, primary);
 }

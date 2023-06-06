@@ -16,7 +16,7 @@
     <template v-for="(heightMap, index) in heightMaps" :key="index">
       <v-list-item
         @click="onSelect(heightMap.id)"
-        active-color="primary"
+        color="primary"
         :title="heightMap.id"
         :active="selectedId === heightMap.id"
         :subtitle="`${heightMap.matrix.length}x${heightMap.matrix.length} pixels`"
