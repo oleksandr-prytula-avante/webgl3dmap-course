@@ -180,6 +180,7 @@
   import { HEXtoRGBAfrom0to1 } from '@/utils/colors';
   import { scene as sceletonScene } from '@/webgl/sceleton/scene';
   import { scene as greyscaleScene } from '@/webgl/greyscale/scene';
+  import { scene as colorScene } from '@/webgl/color/scene';
   import { init } from '@/webgl/init';
   import { IPoint } from '@/interfaces/IPrimitive';
   import { IHeightMap } from '@/interfaces/IHeightMap';
@@ -265,11 +266,12 @@
               sceletonScene(canvas, heightMap, options, this.colors);
               break;
             }
-            case ERenderType.COLOR: {
-              break;
-            }
             case ERenderType.GREYSCALE: {
               void greyscaleScene(canvas, heightMap, options, this.colors);
+              break;
+            }
+            case ERenderType.COLOR: {
+              void colorScene(canvas, heightMap, options, this.colors);
               break;
             }
           }

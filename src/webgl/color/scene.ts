@@ -21,12 +21,10 @@ export interface ISceneOptions  {
 
 export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sceneOptions: ISceneOptions, colors: Record<string, RGBA>): Promise<void> {
   const gl = canvas.getContext('webgl') as WebGLRenderingContext;
-  const { primary } = colors;
   const { fieldOfView, percentage, translation, rotation } = sceneOptions;
   const { matrix } = heightMap;
   const width = matrix.length;
   const depth = matrix[0].length;
-  const color = primary.slice(0, -1);
   const height = width / 3;
   const projection = m4.perspective(
     fieldOfView * Math.PI / PIdeg,   // field of view
@@ -64,7 +62,6 @@ export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sc
     projection,
     view,
     model,
-    color,
     scale,
     displacementMap,
   });
