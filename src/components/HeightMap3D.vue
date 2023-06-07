@@ -179,7 +179,7 @@
   import { RGBA } from '@/interfaces/ILandscape';
   import { HEXtoRGBAfrom0to1 } from '@/utils/colors';
   import { scene as sceletonScene } from '@/webgl/sceleton/scene';
-  import { scene as colorScene } from '@/webgl/color/scene';
+  import { scene as greyscaleScene } from '@/webgl/greyscale/scene';
   import { init } from '@/webgl/init';
   import { IPoint } from '@/interfaces/IPrimitive';
   import { IHeightMap } from '@/interfaces/IHeightMap';
@@ -269,7 +269,7 @@
               break;
             }
             case ERenderType.GREYSCALE: {
-              colorScene(canvas, heightMap, options, this.colors);
+              void greyscaleScene(canvas, heightMap, options, this.colors);
               break;
             }
           }
@@ -314,7 +314,6 @@
         const dX = (x - this.position[0]) * PIdeg / canvas.width;
         const dY = (y - this.position[1]) * PIdeg / canvas.height;
 
-        /*
         this.angleY += dX;
 
         if (this.angleY < 0) {
@@ -334,7 +333,6 @@
         if (this.angleX > PI2Deg) {
           this.angleX = 0;
         }
-        */
       },
 
       increaseAngleY(): void {

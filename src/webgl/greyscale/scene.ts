@@ -1,6 +1,6 @@
 import * as twgl from 'twgl.js';
 
-import { TotalDegrees, TotalRGB } from '@/constants/color';
+import { TotalDegrees } from '@/constants/color';
 import { IHeightMap } from "@/interfaces/IHeightMap";
 import { RGBA } from "@/interfaces/ILandscape";
 import { IPoint } from '@/interfaces/IPrimitive';
@@ -18,7 +18,25 @@ export interface ISceneOptions  {
   percentage: number;
 }
 
-export function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sceneOptions: ISceneOptions, colors: Record<string, RGBA>): void {
+export function createTexturePromisify(gl: WebGLRenderingContext, image: string): Promise<WebGLTexture | Error> {
+  return new Promise(function (resolve, reject): void {
+    twgl.createTexture(gl, {
+      src: image,
+      minMag: gl.LINEAR,
+      wrap: gl.CLAMP_TO_EDGE,
+    }, function (error: Error, displacementMap: WebGLTexture): void {
+      if (error) {
+        reject (error);
+
+        return;
+      }
+
+      resolve(displacementMap);
+    })
+  });
+}
+
+export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sceneOptions: ISceneOptions, colors: Record<string, RGBA>): void {
   const gl = canvas.getContext('webgl') as WebGLRenderingContext;
   const { primary } = colors;
   const { fieldOfView, percentage, translation, rotation } = sceneOptions;
@@ -55,25 +73,18 @@ export function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sceneOpt
     width,
     depth
   );
+  const displacementMap = await createTexturePromisify(gl, heightMap.greyscaleImage);
 
-  function render(_, displacementMap) {
-    gl.useProgram(programInfo.program);
-    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
-    twgl.setUniformsAndBindTextures(programInfo, {
-      projection,
-      view,
-      model,
-      color,
-      scale,
-      displacementMap,
-    });
+  gl.useProgram(programInfo.program);
+  twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+  twgl.setUniformsAndBindTextures(programInfo, {
+    projection,
+    view,
+    model,
+    color,
+    scale,
+    displacementMap,
+  });
 
-    twgl.drawBufferInfo(gl, bufferInfo);
-  }
-
-  twgl.createTexture(gl, {
-    src: heightMap.greyscaleImage,
-    minMag: gl.LINEAR,
-    wrap: gl.CLAMP_TO_EDGE,
-  }, render);
+  twgl.drawBufferInfo(gl, bufferInfo);
 }
