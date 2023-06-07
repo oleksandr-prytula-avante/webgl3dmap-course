@@ -8,7 +8,7 @@ import { PIdeg } from '@/constants/WEGBL';
 
 import { vertexShader } from './vertex';
 import { fragmentShader } from './fragment';
-import { createTexturePromisify } from '../texture';
+import { createTexture } from '../texture';
 
 const { m4 } = twgl;
 
@@ -57,24 +57,18 @@ export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sc
     depth
   );
 
-  function render(_, displacementMap) {
-    gl.useProgram(programInfo.program);
-    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
-    twgl.setUniformsAndBindTextures(programInfo, {
-      projection,
-      view,
-      model,
-      color,
-      scale,
-      displacementMap,
-    });
+  const displacementMap = await createTexture(gl, heightMap.greyscaleImage);
 
-    twgl.drawBufferInfo(gl, bufferInfo);
-  }
+  gl.useProgram(programInfo.program);
+  twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+  twgl.setUniformsAndBindTextures(programInfo, {
+    projection,
+    view,
+    model,
+    color,
+    scale,
+    displacementMap,
+  });
 
-  twgl.createTexture(gl, {
-    src: heightMap.greyscaleImage,
-    minMag: gl.LINEAR,
-    wrap: gl.CLAMP_TO_EDGE,
-  }, render);
+  twgl.drawBufferInfo(gl, bufferInfo);
 }

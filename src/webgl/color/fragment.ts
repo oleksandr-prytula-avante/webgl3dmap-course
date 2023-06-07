@@ -16,7 +16,6 @@ void main() {
   vec4 tex0 = texture2D(displacementMap, uv0);
   vec4 tex1 = texture2D(displacementMap, uv1);
   vec4 tex2 = texture2D(displacementMap, uv2);
-  vec3 color = vec3(tex0.r, tex0.g, tex0.b);
 
   float h0 = (tex0.r + tex0.g + tex0.b) * 0.33;
   float h1 = (tex1.r + tex1.g + tex1.b) * 0.33;
@@ -28,6 +27,8 @@ void main() {
 
   vec3 v0 = p1 - p0;
   vec3 v1 = p2 - p0;
+
+  vec3 color = vec3(tex0.r, tex0.g, tex0.b);
 
   vec3 normal = normalize(cross(v1, v0));
   vec3 lightDir = normalize(vec3(1, -3, 2));

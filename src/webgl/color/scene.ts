@@ -8,7 +8,7 @@ import { PIdeg } from '@/constants/WEGBL';
 
 import { vertexShader } from './vertex';
 import { fragmentShader } from './fragment';
-import { createTexturePromisify } from '../texture';
+import { createTexture } from '../texture';
 
 const { m4 } = twgl;
 
@@ -19,7 +19,7 @@ export interface ISceneOptions  {
   percentage: number;
 }
 
-export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sceneOptions: ISceneOptions, colors: Record<string, RGBA>): Promise<void> {
+export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sceneOptions: ISceneOptions): Promise<void> {
   const gl = canvas.getContext('webgl') as WebGLRenderingContext;
   const { fieldOfView, percentage, translation, rotation } = sceneOptions;
   const { matrix } = heightMap;
@@ -54,7 +54,8 @@ export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sc
     width,
     depth
   );
-  const displacementMap = await createTexturePromisify(gl, heightMap.greyscaleImage);
+
+  const displacementMap = await createTexture(gl, heightMap.greyscaleImage);
 
   gl.useProgram(programInfo.program);
   twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);

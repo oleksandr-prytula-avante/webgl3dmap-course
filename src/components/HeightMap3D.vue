@@ -26,7 +26,7 @@
           >
             <v-btn value="lines">Lines</v-btn>
             <v-btn value="greyscale">Greyscale</v-btn>
-            <v-btn value="color">Color</v-btn>
+            <v-btn value="color" :disaled="true">Color</v-btn>
           </v-btn-toggle>
           <v-switch
             class="right-button ml-6"
@@ -179,8 +179,8 @@
   import { RGBA } from '@/interfaces/ILandscape';
   import { HEXtoRGBAfrom0to1 } from '@/utils/colors';
   import { scene as sceletonScene } from '@/webgl/sceleton/scene';
-  import { scene as greyscaleScene } from '@/webgl/greyscale/scene';
   import { scene as colorScene } from '@/webgl/color/scene';
+  import { scene as greyscaleScene } from '@/webgl/greyscale/scene';
   import { init } from '@/webgl/init';
   import { IPoint } from '@/interfaces/IPrimitive';
   import { IHeightMap } from '@/interfaces/IHeightMap';
@@ -266,12 +266,12 @@
               sceletonScene(canvas, heightMap, options, this.colors);
               break;
             }
-            case ERenderType.GREYSCALE: {
-              void greyscaleScene(canvas, heightMap, options, this.colors);
+            case ERenderType.COLOR: {
+              colorScene(canvas, heightMap, options);
               break;
             }
-            case ERenderType.COLOR: {
-              void colorScene(canvas, heightMap, options, this.colors);
+            case ERenderType.GREYSCALE: {
+              void greyscaleScene(canvas, heightMap, options, this.colors);
               break;
             }
           }

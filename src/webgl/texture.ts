@@ -1,21 +1,19 @@
 import * as twgl from 'twgl.js';
 
-export function createTexturePromisify(gl: WebGLRenderingContext, image: string): Promise<WebGLTexture | Error> {
+export function createTexture(gl: WebGLRenderingContext, src: string): Promise<Error | WebGLTexture> {
   return new Promise(function (resolve, reject): void {
     twgl.createTexture(gl, {
-      src: image,
+      src,
       minMag: gl.LINEAR,
       wrap: gl.CLAMP_TO_EDGE,
-    }, function (error: Error, displacementMap: WebGLTexture): void {
-      console.warn(error, displacementMap);
-
+    }, function (error: Error, texture: WebGLTexture) {
       if (error) {
-        reject (error);
+        reject(error);
 
         return;
       }
 
-      resolve(displacementMap);
-    })
+      resolve(texture);
+    });
   });
 }
