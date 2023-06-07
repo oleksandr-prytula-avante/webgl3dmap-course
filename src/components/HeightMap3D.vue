@@ -26,7 +26,7 @@
           >
             <v-btn value="lines">Lines</v-btn>
             <v-btn value="greyscale">Greyscale</v-btn>
-            <v-btn value="color" :disaled="true">Color</v-btn>
+            <v-btn value="color">Color</v-btn>
           </v-btn-toggle>
           <v-switch
             class="right-button ml-6"

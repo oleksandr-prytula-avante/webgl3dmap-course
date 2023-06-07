@@ -7,6 +7,8 @@ export function createTexturePromisify(gl: WebGLRenderingContext, image: string)
       minMag: gl.LINEAR,
       wrap: gl.CLAMP_TO_EDGE,
     }, function (error: Error, displacementMap: WebGLTexture): void {
+      console.warn(error, displacementMap);
+
       if (error) {
         reject (error);
 
