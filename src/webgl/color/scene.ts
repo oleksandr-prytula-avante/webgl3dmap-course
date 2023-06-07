@@ -55,7 +55,7 @@ export async function scene(canvas: HTMLCanvasElement, heightMap: IHeightMap, sc
     depth
   );
 
-  const displacementMap = await createTexture(gl, heightMap.greyscaleImage);
+  const displacementMap = await createTexture(gl, heightMap.colorImage);
 
   gl.useProgram(programInfo.program);
   twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
